@@ -1,0 +1,39 @@
+
+cmake_minimum_required(VERSION 3.10.0)
+
+project(md5)
+add_definitions("-std=c++11")
+message("CMAKE_BINARY_DIR" ${CMAKE_BINARY_DIR})
+
+add_definitions("-DCONAN_DISABLE_CHECK_COMPILER")
+set(CONAN_DISABLE_CHECK_COMPILER ON)
+
+# 此处主动 指定compiler arch 为x86_64 主要是因为link 的lib conan install 的为x86_64的
+set(CMAKE_OSX_ARCHITECTURES x86_64)
+if(NOT DEFINED CONAN_DISABLE_CHECK_COMPILER)
+        message("没有定义disable check complier, 
+        去掉了 compiler 的check 本机的apple-clang 版本是13.0 设置为13 有些package missing") 
+endif()
+
+include(
+    ${CMAKE_BINARY_DIR}/conanbuildinfo.cmake
+)
+# 加上 keep_path conan 生产的cmake 默认是会set(CMAKE_SKIP_RPATH 1) 这样设置的
+# 所以 默认的target link 的就是一个name 默认会从系统的/usr/local/lib、/lib, /usr/lib 下面查找
+# 加上keep_rpath的话，会增加相应的path， 
+# 此处rpath 和executable_path 其实是一样的了
+# otool -l ./bin/md5 查看具体路径
+# /Users/GavinCao/.conan/data/sqlite3/3.38.1/_/_/package/8ac1c185f15fbd5988e2e83eca9e5a743b194ab6/lib/xxx.dylib
+# 不然的话就是/usr/local/lib/xxx.dylib
+# 但是此处缺点是 这个bin 给别人 用不了，每个机器上的link dependecy 不同， 正常来说够了
+# 在conanprofile 中增加了import 把动态库 都拷贝到bin 下面， 指定使用install_name 完美的
+# https://github.com/conan-io/conan/issues/1238
+# CMAKE_MACOSX_RPATH = ON (to prepend @rpath to the install name)
+
+conan_basic_setup(KEEP_RPATHS)
+set(CMAKE_INSTALL_RPATH "@executable_path/../lib/")
+
+add_executable(md5 main.cpp)
+# conan_target_link_libraries(md5)
+message(${CONAN_LIBS})
+target_link_libraries(md5 ${CONAN_LIBS}) #等同上

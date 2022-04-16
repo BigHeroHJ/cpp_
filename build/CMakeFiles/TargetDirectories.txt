@@ -1,0 +1,3 @@
+/Users/GavinCao/SourceCode/cpp/build/CMakeFiles/md5.dir
+/Users/GavinCao/SourceCode/cpp/build/CMakeFiles/edit_cache.dir
+/Users/GavinCao/SourceCode/cpp/build/CMakeFiles/rebuild_cache.dir

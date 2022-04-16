@@ -1,0 +1,9 @@
+ [requires]
+ poco/1.9.4
+
+
+[generators]
+cmake
+
+[imports]
+lib, *.dylib* -> ./lib # Copies all dylib files from packages lib folder to my "bin" folder
